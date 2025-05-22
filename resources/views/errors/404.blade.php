@@ -16,9 +16,9 @@
             <h1 class="display-1 fw-bold">404</h1>
             <p class="fs-3"> <span class="text-danger">Opps!</span> Page not found.</p>
             <p class="lead">
-                The page you’re looking for doesn’t exist.
+                The page you're looking for doesn't exist.
             </p>
-            <a href="{{ route('home') }}" class="btn btn-primary">Go Home</a>
+            <a href="{{ route('dashboard') }}" class="btn btn-primary">Go Home</a>
         </div>
     </div>
 </body>

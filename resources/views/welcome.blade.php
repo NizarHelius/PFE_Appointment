@@ -196,7 +196,7 @@
                     <h1 class="display-5 fw-bold mb-4">Book Appointments Easily</h1>
                     <p class="lead mb-4">Streamline your scheduling process with our intuitive appointment booking system. Save time and focus on what matters most.</p>
                     <div class="d-flex gap-3">
-                        <a href="#booking" class="btn btn-light btn-lg px-4">Book Now</a>
+                        <a href="{{ route('home') }}" class="btn btn-light btn-lg px-4" style="pointer-events: auto; cursor: pointer;">Book Now</a>
                         <a href="#how-it-works" class="btn btn-outline-light btn-lg px-4">Learn More</a>
                     </div>
                 </div>
@@ -309,7 +309,7 @@
             <h2 class="section-title text-center mb-5">Make an Appointment</h2>
             <div class="text-center">
                 <p class="lead mb-4">Ready to book your appointment? Click the button below to get started.</p>
-                <a href="{{ route('booking') }}" class="btn btn-primary btn-lg px-4">Book Appointment Now</a>
+                <a href="{{ route('home') }}" class="btn btn-primary btn-lg px-4">Book Appointment Now</a>
             </div>
         </div>
     </section>
