@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Auth;
+
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\User;
@@ -44,30 +45,31 @@ class LoginController extends Controller
     }
 
     protected function attemptLogin(Request $request)
-	{
-		// Your custom login logic
-		$credentials = $this->credentials($request);
+    {
+        // Your custom login logic
+        $credentials = $this->credentials($request);
 
-		// Retrieve user by email
-		$user = User::where('email', $credentials['email'])->first();
+        // Retrieve user by email
+        $user = User::where('email', $credentials['email'])->first();
 
-		// Check if the user exists and the password is correct
-		if (!$user || !Hash::check($credentials['password'], $user->password)) {
-			return false;
-		}
+        // Check if the user exists and the password is correct
+        if (!$user || !Hash::check($credentials['password'], $user->password)) {
+            return false;
+        }
 
-		// Check if the user is active (status == 1)
-		if (!$user->status) {
-			throw ValidationException::withMessages([
-				'email' => [trans('You account access is disabled')],
-			]);
-		}
+        // Check if the user is active (status == 1)
+        if (!$user->status) {
+            throw ValidationException::withMessages([
+                'email' => [trans('You account access is disabled')],
+            ]);
+        }
 
-		// Attempt to log in the user
-		return $this->guard()->attempt(
-			$credentials, $request->filled('remember')
-		);
-	}
+        // Attempt to log in the user
+        return $this->guard()->attempt(
+            $credentials,
+            $request->filled('remember')
+        );
+    }
 
     public function logout(Request $request)
     {
@@ -83,7 +85,6 @@ class LoginController extends Controller
 
         return $request->wantsJson()
             ? new JsonResponse([], 204)
-            : redirect()->route('login');
+            : redirect()->route('home');
     }
-
 }

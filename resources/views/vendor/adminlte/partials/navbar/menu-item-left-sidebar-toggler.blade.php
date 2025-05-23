@@ -14,7 +14,7 @@
     </a>
 </li>
 <li class="nav-item">
-    <a class="nav-link" target="_blank" href="{{ route('dashboard')}}"
+    <a class="nav-link" target="_blank" href="{{ route('welcome')}}"
         <i class="fas fa-bars"> Go to website</i>
         <span class="sr-only">{{ __('adminlte::adminlte.toggle_navigation') }}</span>
     </a>

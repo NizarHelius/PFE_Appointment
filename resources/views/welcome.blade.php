@@ -161,9 +161,6 @@
                     <ul class="nav">
                         @guest
                         <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="/">Home</a>
-                        </li>
-                        <li class="nav-item">
                             <a class="nav-link text-dark" href="/login">Login</a>
                         </li>
                         <li class="nav-item">
@@ -171,9 +168,6 @@
                         </li>
                         @endguest
                         @auth
-                        <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="/">Home</a>
-                        </li>
                         <li class="nav-item ">
                             <a class="nav-link text-dark" href="/dashboard">My Account</a>
                         </li>
@@ -397,7 +391,7 @@
     </section>
 
     <footer>
-        <div class="container">
+        <div class="bg-dark text-light p-4">
             <div class="row">
                 <div class="col-md-4 mb-4">
                     <h5 class="mb-3"><i class="bi bi-calendar-check"></i> {{ $setting->bname }}</h5>
@@ -436,7 +430,7 @@
                     <span>&copy; {{ date('Y') }} {{ $setting->bname }}. All rights reserved.</span>
                 </div>
                 <div class="col-md-6 text-md-end">
-                    <span>Designed & Developed by <a target="_blank" href="https://www.vfixtechnology.com">VFIX TECHNOLOGY</a></span>
+                    <span>Designed & Developed by <a target="_blank" href="https://www.vfixtechnology.com">BookApp Team</a></span>
                 </div>
             </div>
         </div>

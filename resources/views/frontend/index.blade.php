@@ -5,9 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> {{ $setting->meta_title }}</title>
-      <!-- SEO Meta Tags -->
-      <meta name="description" content="{{ $setting->meta_description }}">
-      <meta name="keywords" content="{{ $setting->meta_keywords }}">
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="{{ $setting->meta_description }}">
+    <meta name="keywords" content="{{ $setting->meta_keywords }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.0/css/all.min.css"
@@ -15,7 +15,7 @@
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     @if ($setting->header)
-        {!! $setting->header !!}
+    {!! $setting->header !!}
     @endif
 </head>
 
@@ -32,18 +32,18 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
                         @guest
-                            <li class="nav-item">
-                                <a class="nav-link active" href="{{ route('login') }}">Login</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('register') }}">Register</a>
-                            </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="{{ route('login') }}">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('register') }}">Register</a>
+                        </li>
                         @endguest
 
                         @auth
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('dashboard') }}">Dashboard</a>
-                            </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('dashboard') }}">Dashboard</a>
+                        </li>
                         @endauth
 
                     </ul>
@@ -251,10 +251,17 @@
         </div>
     </div>
 
-    <footer>
-        <div class="container pb-2">
-            <div class="row text-center">
-            <span>Designed & Developed by <a target="_blank" href="https://www.vfixtechnology.com">VFIX TECHNOLOGY</a></span>
+    <footer style="background: linear-gradient(90deg, #0d6efd 0%, #6610f2 100%); color: #fff; padding: 32px 0 16px 0; margin-top: 48px; box-shadow: 0 -2px 16px rgba(0,0,0,0.08);">
+        <div class="container">
+            <div class="row justify-content-center align-items-center">
+                <div class="col-12 text-center">
+                    <span style="font-size: 1.1rem; letter-spacing: 0.5px;">
+                        Designed and Developed by
+                        <a target="_blank" href="https://www.vfixtechnology.com" style="color: #fff; text-decoration: underline; font-weight: 600;">
+                            BookApp Team
+                        </a>
+                    </span>
+                </div>
             </div>
         </div>
     </footer>
@@ -675,7 +682,7 @@
                             // Update service name display
                             $(".selected-service-name").html(
                                 `Selected Service: ${service.title} (${bookingState.selectedService.price})`
-                                );
+                            );
 
                             // Clear employees container
                             $("#employees-container").empty();
@@ -1103,7 +1110,7 @@
     </script>
 
     @if ($setting->footer)
-        {!! $setting->footer !!}
+    {!! $setting->footer !!}
     @endif
 </body>
 

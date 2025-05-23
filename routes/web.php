@@ -26,7 +26,7 @@ Route::get('/', function () {
     return view('welcome', compact('setting'));
 })->name('welcome');
 
-Route::get('/booking', [FrontendController::class, 'index'])->name('booking');
+Route::get('/home', [FrontendController::class, 'index'])->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
 

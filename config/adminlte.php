@@ -526,7 +526,10 @@ return [
             ],
         ],
         'Chartjs' => [
-            'active' => false,
+            // If you set 'active' to true, the Chart.js plugin will be loaded and available in your admin panel.
+            // This means the Chart.js JavaScript library will be included, allowing you to create charts in your views.
+            // If you leave it as false, Chart.js will not be loaded.
+            'active' => true,
             'files' => [
                 [
                     'type' => 'js',
