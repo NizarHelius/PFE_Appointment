@@ -24,10 +24,19 @@
 
 @section('content')
 
-
 <div class="container-fluid px-0">
     <div class="row">
         <div class="col-sm-12">
+            <!-- Chart.js Card -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="myChart" height="100"></canvas>
+                </div>
+            </div>
+            <!-- End Chart.js Card -->
             <div id="calendar"></div>
         </div>
     </div>
@@ -162,14 +171,57 @@
         opacity: 1;
         z-index: 1000 !important;
     }
+
+    /* Calm, less gradient FullCalendar buttons */
+    .fc button,
+    .fc .fc-button {
+        background: #f4f6fa;
+        color: #3a3a3a !important;
+        border: 1px solid #d1d5db;
+        border-radius: 0.3rem;
+        box-shadow: none;
+        padding: 0.5rem 1.2rem;
+        font-weight: 500;
+        margin: 0 2px;
+        transition: background 0.2s, color 0.2s, border 0.2s;
+    }
+
+    .fc button:hover,
+    .fc .fc-button:hover {
+        background: #e2e6ea;
+        color: #222 !important;
+        border-color: #bfc5cc;
+    }
+
+    .fc .fc-state-active,
+    .fc .fc-button-active {
+        background: #e7f1fa !important;
+        color: #1976d2 !important;
+        border-color: #90caf9;
+        box-shadow: none;
+    }
+
+    .fc .fc-today-button {
+        background: #e0e0e0 !important;
+        color: #1976d2 !important;
+        font-weight: bold;
+        border-color: #bdbdbd;
+    }
+
+    .fc .fc-button-disabled {
+        background: #f8f9fa !important;
+        color: #adb5bd !important;
+        cursor: not-allowed;
+        opacity: 0.7;
+        border-color: #e9ecef;
+    }
 </style>
 @stop
 
 @section('js')
-
+@parent
 <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@3.10.2/dist/fullcalendar.min.js"></script>
-
 
 <script>
     $(document).ready(function() {
@@ -249,5 +301,44 @@
     });
 </script>
 
-
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+                datasets: [{
+                    label: 'Sample Data',
+                    data: [12, 19, 3, 5, 2, 3],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255,99,132,1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
+</script>
 @stop
