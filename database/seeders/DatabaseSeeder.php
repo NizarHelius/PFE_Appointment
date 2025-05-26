@@ -78,7 +78,6 @@ class DatabaseSeeder extends Seeder
 
         // Create roles if they do not exist
         $adminRole = Role::firstOrCreate(['name' => 'admin']);
-        $moderatorRole = Role::firstOrCreate(['name' => 'moderator']);
         $employeeRole = Role::firstOrCreate(['name' => 'employee']);
         $subscriberRole = Role::firstOrCreate(['name' => 'subscriber']);
 
@@ -95,32 +94,10 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('admin123'),
         ]);
 
-        // Assign specific permissions to the 'moderator' role
-        $moderatorPermissions = [
-            'appointments.view',
-            'appointments.create',
-            'appointments.edit',
-            'appointments.delete',
-
-            'categories.view',
-            'categories.create',
-            'categories.edit',
-            'categories.delete',
-
-            'services.view',
-            'services.create',
-            'services.edit',
-            'services.delete',
-        ];
-
-        $moderatorRole->syncPermissions(Permission::whereIn('name', $moderatorPermissions)->get());
-
         // Assign the 'admin' role to the user
         $user->assignRole($adminRole);
 
-
-
-         // Create admin as employee with additional details
+        // Create admin as employee with additional details
         $employee = Employee::create([
             'user_id' => $user->id,
             'days' => [

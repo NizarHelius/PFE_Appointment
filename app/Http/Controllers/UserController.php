@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Support\Facades\DB;
 
 use Illuminate\Http\Request;
@@ -11,6 +12,7 @@ use App\Models\Holiday;
 use App\Models\Employee;
 use Hash;
 use Session;
+
 class UserController extends Controller
 {
 
@@ -38,10 +40,9 @@ class UserController extends Controller
             'sunday',
         ];
 
-        //$roles = Role::where('name', '!=', 'admin')->get();
-        $roles = Role::where('name', '!=', 'admin')->get();
+        $roles = Role::whereIn('name', ['admin', 'employee', 'subscriber'])->get();
         $services = Service::whereStatus(1)->get();
-        return view('backend.user.create',compact('roles','services','days'));
+        return view('backend.user.create', compact('roles', 'services', 'days'));
     }
 
     /**
@@ -78,8 +79,7 @@ class UserController extends Controller
 
 
         // transform time slots into from and to combination
-        if($request->is_employee)
-        {
+        if ($request->is_employee) {
             $transformedData = $this->transformOpeningHours($data['days']); // Use $this->transformOpeningHours
             $data['days'] = $transformedData;
 
@@ -112,7 +112,13 @@ class UserController extends Controller
 
         // Available days of the week
         $days = [
-            'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday',
+            'monday',
+            'tuesday',
+            'wednesday',
+            'thursday',
+            'friday',
+            'saturday',
+            'sunday',
         ];
 
         // Available slot duration steps
@@ -135,8 +141,8 @@ class UserController extends Controller
         //dd($employeeDays);
 
         // Get all roles excluding 'admin'
-        $roles = Role::all();
-       // $roles = Role::where('name', '!=', 'admin')->get();
+        $roles = Role::whereIn('name', ['admin', 'employee', 'subscriber'])->get();
+        // $roles = Role::where('name', '!=', 'admin')->get();
 
         // Get all active services
         $services = Service::whereStatus(1)->get();
@@ -152,7 +158,7 @@ class UserController extends Controller
         // Validate request data
         $data = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'sometimes|email|unique:users,email,' . $user->id ,
+            'email' => 'sometimes|email|unique:users,email,' . $user->id,
             'social.*' => 'sometimes',
             'password' => 'nullable|string|min:8|confirmed',
             'roles' => 'nullable|array|exists:roles,name', // Validate roles array
@@ -188,7 +194,6 @@ class UserController extends Controller
             if ($request->has('status') && $request->status != $user->status) {
                 return redirect()->back()->withErrors(['status' => 'You cannot change your own status.']);
             }
-
         }
 
 
@@ -310,7 +315,6 @@ class UserController extends Controller
                     $user->employee->holidays()->delete();
                 }
             }
-
         }
 
 
@@ -322,7 +326,7 @@ class UserController extends Controller
     // Custom method to log out a specific user
     protected function logoutUser(User $user)
     {
-          // Check if the application is using the database session driver
+        // Check if the application is using the database session driver
         if (config('session.driver') === 'database') {
             // Delete all sessions for this user by matching the user ID
             DB::table('sessions')->where('user_id', $user->id)->delete();
@@ -335,8 +339,7 @@ class UserController extends Controller
      */
     public function destroy(User $user, Request $request)
     {
-        if($user->id == 1)
-        {
+        if ($user->id == 1) {
             return back()->withErrors('First admin user cannot be deleted.');
         }
 
@@ -352,14 +355,14 @@ class UserController extends Controller
     public function trashView(Request $request)
     {
         $users = User::onlyTrashed()->latest()->get();
-        return view('backend.user.trash',compact('users'));
+        return view('backend.user.trash', compact('users'));
     }
 
     // restore data
     public function restore($id)
     {
         $user = User::withTrashed()->find($id);
-        if(!is_null($user)){
+        if (!is_null($user)) {
             $user->restore();
         }
         return redirect()->back()->with("success", "User Restored Succesfully");
@@ -372,14 +375,12 @@ class UserController extends Controller
         $user = User::withTrashed()->findOrFail($id);
 
         //for employee
-        if($user->employee->appointments->count())
-        {
+        if ($user->employee->appointments->count()) {
             return back()->withErrors('User cannot be deleted permanently, already engaged in existing bookings!');
         }
 
         //for user
-        if($user->appointments->count())
-        {
+        if ($user->appointments->count()) {
             return back()->withErrors('User cannot be deleted permanently, already engaged in existing bookings!');
         }
 
@@ -396,7 +397,7 @@ class UserController extends Controller
             //     $appointment->forceDelete(); // Force delete each appointment
             // }
 
-                 // Detach all services related to the employee (many-to-many relationship)
+            // Detach all services related to the employee (many-to-many relationship)
             if ($user->employee->services()->exists()) {
                 $user->employee->services()->detach(); // Detach the services from the employee
             }
@@ -447,29 +448,26 @@ class UserController extends Controller
         ]);
 
         //remove old image
-        $destination = public_path('uploads/images/profile/'. $user->image);
-        if(\File::exists($destination))
-        {
+        $destination = public_path('uploads/images/profile/' . $user->image);
+        if (\File::exists($destination)) {
             \File::delete($destination);
         }
 
-        $imageName = time().'.'.$request->image->getClientOriginalExtension();
-        $request->image->move(public_path('uploads/images/profile/'),$imageName);
+        $imageName = time() . '.' . $request->image->getClientOriginalExtension();
+        $request->image->move(public_path('uploads/images/profile/'), $imageName);
         $user->update([
             'image' => $imageName
         ]);
 
         return back()->withSuccess('Profile image has been updated successfully!');
-
     }
 
 
     //delete profile image
     public function deleteProfileImage(User $user)
     {
-        $destination = public_path('uploads/images/profile/'.$user->image);
-        if(\File::exists($destination))
-        {
+        $destination = public_path('uploads/images/profile/' . $user->image);
+        if (\File::exists($destination)) {
             \File::delete($destination);
         }
 
@@ -514,10 +512,4 @@ class UserController extends Controller
 
         return $employeeDays;
     }
-
-
-
-
-
-
 }
