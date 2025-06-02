@@ -3,7 +3,7 @@
 @section('title', 'Dashboard')
 
 @section('content_header')
-<h1>Appointments</h1>
+<h1>Dashboard</h1>
 @if (session('success'))
 <div class="alert alert-success alert-dismissable mt-2">
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -23,20 +23,62 @@
 @stop
 
 @section('content')
-
 <div class="container-fluid px-0">
-    <div class="row">
+    <!-- User Statistics Cards - Only visible to admins -->
+    @if(auth()->user()->hasRole('admin'))
+    <div class="row mb-4">
+        <div class="col-lg-4 col-md-6">
+            <div class="small-box bg-info">
+                <div class="inner">
+                    <h3>{{ $adminCount }}</h3>
+                    <p>Administrators</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+            <div class="small-box bg-success">
+                <div class="inner">
+                    <h3>{{ $employeeCount }}</h3>
+                    <p>Employees</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+            <div class="small-box bg-warning">
+                <div class="inner">
+                    <h3>{{ $clientCount }}</h3>
+                    <p>Clients</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-users"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart.js Card - Only visible to admins -->
+    <div class="row mb-4">
         <div class="col-sm-12">
-            <!-- Chart.js Card -->
-            <div class="card mb-4">
+            <div class="card">
                 <div class="card-header">
-                    <h5 class="mb-0">Statistics</h5>
+                    <h5 class="mb-0">User Analytics</h5>
                 </div>
                 <div class="card-body">
                     <canvas id="myChart" height="100"></canvas>
                 </div>
             </div>
-            <!-- End Chart.js Card -->
+        </div>
+    </div>
+    @endif
+
+    <div class="row">
+        <div class="col-sm-12">
             <div id="calendar"></div>
         </div>
     </div>
@@ -222,6 +264,7 @@
 @parent
 <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@3.10.2/dist/fullcalendar.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
     $(document).ready(function() {
@@ -301,32 +344,19 @@
     });
 </script>
 
+@if(auth()->user()->hasRole('admin'))
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         var ctx = document.getElementById('myChart').getContext('2d');
         var myChart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+                labels: @json($chartData['labels'] ?? []),
                 datasets: [{
-                    label: 'Sample Data',
-                    data: [12, 19, 3, 5, 2, 3],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 159, 64, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255,99,132,1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)'
-                    ],
+                    label: 'User Distribution',
+                    data: @json($chartData['data'] ?? []),
+                    backgroundColor: @json($chartData['backgroundColor'] ?? []),
+                    borderColor: @json($chartData['borderColor'] ?? []),
                     borderWidth: 1
                 }]
             },
@@ -334,11 +364,20 @@
                 responsive: true,
                 scales: {
                     y: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
                     }
                 }
             }
         });
     });
 </script>
+@endif
 @stop

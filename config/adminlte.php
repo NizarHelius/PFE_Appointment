@@ -413,6 +413,12 @@ return [
             'icon' => 'fas fa-fw fa-cog',
             'can'  => 'setting update',
         ],
+        [
+            'text' => 'My Appointments',
+            'url'  => 'employee/appointments',
+            'icon' => 'fas fa-calendar-check',
+            'can'  => 'appointments.view',
+        ],
 
         // [
         //     'text' => 'multilevel',

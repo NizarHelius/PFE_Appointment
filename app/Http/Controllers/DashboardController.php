@@ -15,12 +15,40 @@ class DashboardController extends Controller
         $setting = Setting::firstOrFail();
         $user = auth()->user();
 
+        // Get user counts by role only for admin users
+        $adminCount = null;
+        $employeeCount = null;
+        $clientCount = null;
+        $chartData = null;
+
+        if ($user->hasRole('admin')) {
+            $adminCount = \App\Models\User::role('admin')->count();
+            $employeeCount = \App\Models\User::role('employee')->count();
+            $clientCount = \App\Models\User::role('subscriber')->count();
+
+            // Get analytics data for the chart
+            $chartData = [
+                'labels' => ['Admins', 'Employees', 'Clients'],
+                'data' => [$adminCount, $employeeCount, $clientCount],
+                'backgroundColor' => [
+                    'rgba(54, 162, 235, 0.2)',  // Blue for admins
+                    'rgba(75, 192, 192, 0.2)',  // Green for employees
+                    'rgba(255, 206, 86, 0.2)',  // Yellow for clients
+                ],
+                'borderColor' => [
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(255, 206, 86, 1)',
+                ]
+            ];
+        }
+
         // Start with base query
         $query = Appointment::query()->with(['employee.user', 'service', 'user']);
 
         // Only admins can see all data - no conditions added
         if (!$user->hasRole('admin')) {
-            $query->where(function($q) use ($user) {
+            $query->where(function ($q) use ($user) {
                 if ($user->employee) {
                     $q->where('employee_id', $user->employee->id);
                 }
@@ -55,7 +83,8 @@ class DashboardController extends Controller
 
                 return [
                     'id' => $appointment->id, // Add appointment ID
-                    'title' => sprintf('%s - %s',
+                    'title' => sprintf(
+                        '%s - %s',
                         $appointment->name,
                         $appointment->service->title ?? 'Service'
                     ),
@@ -78,7 +107,7 @@ class DashboardController extends Controller
             }
         })->filter();
 
-        return view('backend.dashboard.index', compact('appointments'));
+        return view('backend.dashboard.index', compact('appointments', 'adminCount', 'employeeCount', 'clientCount', 'chartData'));
     }
 
     // Helper function to get color based on status

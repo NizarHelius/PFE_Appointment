@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Employee;
 use Illuminate\Http\Request;
+use App\Models\Appointment;
+use Illuminate\Support\Facades\Auth;
 
 class EmployeeController extends Controller
 {
@@ -78,5 +80,21 @@ class EmployeeController extends Controller
 
         $employee->update($data);
         return back()->withSuccess('Profile has been updated successfullly!');
+    }
+
+    public function appointments()
+    {
+        $user = auth()->guard('web')->user();
+        $employee = $user->employee ?? null;
+
+        if (!$employee) {
+            abort(404, 'Employee not found.');
+        }
+
+        $appointments = Appointment::where('employee_id', $employee->id)
+            ->with(['service', 'user'])
+            ->latest()
+            ->get();
+        return view('employee.appointments', compact('appointments'));
     }
 }

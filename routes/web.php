@@ -99,6 +99,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('test');
 });
 
+Route::middleware(['auth', 'role:employee'])->group(function () {
+    Route::get('/employee/appointments', [App\Http\Controllers\EmployeeController::class, 'appointments'])->name('employee.appointments');
+});
+
 
 
 //frontend routes

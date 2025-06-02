@@ -48,6 +48,13 @@
             width: 100%;
             height: 100%;
             background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSg0NSkiPjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjA1KSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3QgZmlsbD0idXJsKCNwYXR0ZXJuKSIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIvPjwvc3ZnPg==');
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .hero-section .container {
+            position: relative;
+            z-index: 2;
         }
 
         .section-title {
@@ -190,7 +197,7 @@
                     <h1 class="display-5 fw-bold mb-4">Book Appointments Easily</h1>
                     <p class="lead mb-4">Streamline your scheduling process with our intuitive appointment booking system. Save time and focus on what matters most.</p>
                     <div class="d-flex gap-3">
-                        <a href="{{ route('home') }}" class="btn btn-light btn-lg px-4" style="pointer-events: auto; cursor: pointer;">Book Now</a>
+                        <a href="{{ route('home') }}" class="btn btn-primary btn-lg px-4">Book Now</a>
                         <a href="#how-it-works" class="btn btn-outline-light btn-lg px-4">Learn More</a>
                     </div>
                 </div>
