@@ -1,4 +1,3 @@
-
         $(document).ready(function() {
 
             const categories = @json($categories);
@@ -714,7 +713,7 @@
                     notes: $('#customer-notes').val(),
                     amount: parseFloat(bookingState.selectedService.price.replace(/[^0-9.]/g, '')),
                     booking_date: bookingState.selectedDate,
-                    booking_time: bookingState.selectedTime.start || bookingState.selectedTime,
+                    booking_time: bookingState.selectedTime.display, // Use the display format to save full time range
                     status: 'Pending payment',
                     _token: csrfToken // Include CSRF token in payload
                 };

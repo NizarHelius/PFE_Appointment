@@ -6,15 +6,22 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Employee;
 use App\Models\Holiday;
+use Illuminate\Support\Facades\Auth;
 
 class ProfileController extends Controller
 {
     public function index()
     {
-        $user = \Auth::user();
-         // Available days of the week
-         $days = [
-            'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday',
+        $user = Auth::user();
+        // Available days of the week
+        $days = [
+            'monday',
+            'tuesday',
+            'wednesday',
+            'thursday',
+            'friday',
+            'saturday',
+            'sunday',
         ];
 
         // Available slot duration steps
@@ -23,16 +30,16 @@ class ProfileController extends Controller
         // Available break duration steps
         $breaks = ['5', '10', '15', '20', '25', '30'];
 
+        // Get the employee's availability (days) data if it exists and convert to an array
+        $employeeDays = [];
+        if ($user->employee && $user->employee->days) {
+            $employeeDays = is_string($user->employee->days) ? json_decode($user->employee->days, true) : $user->employee->days;
+        }
 
-         // Get the employee's availability (days) data if it exists and convert to an array
-         $employeeDays = $user->employee->days ?? [];
+        // Transform availability slots
+        $employeeDays = $this->transformAvailabilitySlotsForEdit($employeeDays);
 
-         // Transform availability slots
-         $employeeDays = $this->transformAvailabilitySlotsForEdit($employeeDays);
-
-
-
-        return view('backend.profile.index',compact('user','days','steps','breaks','employeeDays'));
+        return view('backend.profile.index', compact('user', 'days', 'steps', 'breaks', 'employeeDays'));
     }
 
 
@@ -195,7 +202,4 @@ class ProfileController extends Controller
 
         return $employeeDays;
     }
-
 }
-
-

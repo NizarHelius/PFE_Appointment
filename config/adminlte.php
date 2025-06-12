@@ -259,6 +259,7 @@ return [
     'use_route_url' => false,
     'dashboard_url' => 'dashboard',
     'logout_url' => 'logout',
+    'logout_method' => 'GET',
     'login_url' => 'login',
     'register_url' => 'register',
     'password_reset_url' => 'password/reset',
@@ -418,6 +419,14 @@ return [
             'url'  => 'employee/appointments',
             'icon' => 'fas fa-calendar-check',
             'can'  => 'appointments.view',
+            'hide_on' => ['admin'],
+        ],
+        [
+            'text' => 'Make Appointment',
+            'route' => 'home',
+            'icon' => 'fas fa-calendar-plus',
+            'id'   => 'make-appointment-menu-item',
+            // 'restricted_to' => ['subscriber'],
         ],
 
         // [
@@ -481,6 +490,7 @@ return [
         JeroenNoten\LaravelAdminLte\Menu\Filters\ClassesFilter::class,
         JeroenNoten\LaravelAdminLte\Menu\Filters\LangFilter::class,
         JeroenNoten\LaravelAdminLte\Menu\Filters\DataFilter::class,
+        App\Filters\AdminMenuFilter::class,
     ],
 
     /*

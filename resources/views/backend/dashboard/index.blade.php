@@ -62,26 +62,88 @@
         </div>
     </div>
 
-    <!-- Chart.js Card - Only visible to admins -->
+    <!-- Appointment Trends Chart -->
     <div class="row mb-4">
         <div class="col-sm-12">
             <div class="card">
                 <div class="card-header">
-                    <h5 class="mb-0">User Analytics</h5>
+                    <h5 class="mb-0">Appointment Trends (Last 7 Days)</h5>
                 </div>
                 <div class="card-body">
-                    <canvas id="myChart" height="100"></canvas>
+                    <canvas id="appointmentTrendsChart" height="100"></canvas>
                 </div>
             </div>
         </div>
     </div>
-    @endif
 
+    <!-- Service Popularity and Recent Activity -->
+    <div class="row">
+        <!-- Service Popularity -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Most Popular Services</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="servicePopularityChart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent Activity</h5>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        @foreach($recentActivity['appointments'] as $appointment)
+                        <div class="time-label">
+                            <span class="bg-info">{{ $appointment->created_at->format('M d, Y') }}</span>
+                        </div>
+                        <div>
+                            <i class="fas fa-calendar-check bg-success"></i>
+                            <div class="timeline-item">
+                                <span class="time"><i class="fas fa-clock"></i> {{ $appointment->created_at->format('H:i') }}</span>
+                                <h3 class="timeline-header">New Appointment</h3>
+                                <div class="timeline-body">
+                                    <strong>{{ $appointment->name }}</strong> booked <strong>{{ $appointment->service->title }}</strong>
+                                    <br>
+                                    Status: <span class="badge" style="background-color: {{ $appointment->color }}">{{ $appointment->status }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        @endforeach
+
+                        @foreach($recentActivity['newUsers'] as $user)
+                        <div class="time-label">
+                            <span class="bg-warning">{{ $user->created_at->format('M d, Y') }}</span>
+                        </div>
+                        <div>
+                            <i class="fas fa-user bg-primary"></i>
+                            <div class="timeline-item">
+                                <span class="time"><i class="fas fa-clock"></i> {{ $user->created_at->format('H:i') }}</span>
+                                <h3 class="timeline-header">New User Registration</h3>
+                                <div class="timeline-body">
+                                    <strong>{{ $user->name }}</strong> joined as <strong>{{ $user->getRoleNames()->first() }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @else
+    <!-- Calendar - Only visible to employees and subscribers -->
     <div class="row">
         <div class="col-sm-12">
             <div id="calendar"></div>
         </div>
     </div>
+    @endif
 </div>
 
 <!-- Appointment Modal -->
@@ -347,19 +409,10 @@
 @if(auth()->user()->hasRole('admin'))
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        var ctx = document.getElementById('myChart').getContext('2d');
-        var myChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: @json($chartData['labels'] ?? []),
-                datasets: [{
-                    label: 'User Distribution',
-                    data: @json($chartData['data'] ?? []),
-                    backgroundColor: @json($chartData['backgroundColor'] ?? []),
-                    borderColor: @json($chartData['borderColor'] ?? []),
-                    borderWidth: 1
-                }]
-            },
+        var ctx = document.getElementById('appointmentTrendsChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: @json($chartData),
             options: {
                 responsive: true,
                 scales: {
@@ -369,10 +422,31 @@
                             stepSize: 1
                         }
                     }
-                },
+                }
+            }
+        });
+
+        var serviceCtx = document.getElementById('servicePopularityChart').getContext('2d');
+        new Chart(serviceCtx, {
+            type: 'doughnut',
+            data: {
+                labels: @json($serviceStats -> pluck('title')),
+                datasets: [{
+                    data: @json($serviceStats -> pluck('appointments_count')),
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.8)',
+                        'rgba(75, 192, 192, 0.8)',
+                        'rgba(255, 206, 86, 0.8)',
+                        'rgba(153, 102, 255, 0.8)',
+                        'rgba(255, 159, 64, 0.8)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
                 plugins: {
                     legend: {
-                        display: false
+                        position: 'right'
                     }
                 }
             }

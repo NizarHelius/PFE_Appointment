@@ -7,6 +7,7 @@ use App\Models\Setting;
 use Illuminate\Http\Request;
 use App\Events\BookingCreated;
 use App\Events\StatusUpdated;
+use Illuminate\Support\Facades\Log;
 
 
 class AppointmentController extends Controller
@@ -47,7 +48,9 @@ class AppointmentController extends Controller
             'status' => 'required|string',
         ]);
 
-            // Set user_id if not provided but user is authenticated
+        Log::debug('AppointmentController: Received booking_time', ['booking_time' => $request->booking_time]);
+
+        // Set user_id if not provided but user is authenticated
         // if (auth()->check() && !$request->has('user_id')) {
         //     $validated['user_id'] = auth()->id();
         // }
@@ -58,7 +61,7 @@ class AppointmentController extends Controller
             auth()->user()->hasRole('employee')
         );
 
-            // If admin/moderator/employee is booking, user_id should be null
+        // If admin/moderator/employee is booking, user_id should be null
         if ($isPrivilegedRole) {
             $validated['user_id'] = null;
         } elseif (auth()->check() && !$request->has('user_id')) {
@@ -130,5 +133,4 @@ class AppointmentController extends Controller
 
         return redirect()->back()->with('success', 'Appointment status updated successfully.');
     }
-
 }

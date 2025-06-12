@@ -64,14 +64,19 @@ class DatabaseSeeder extends Seeder
             // Create permissions and roles first
             $this->createPermissionsAndRoles();
 
+            // Create categories and services first
+            $this->createCategoriesAndServices();
+
             // Create initial admin user if not exists
             if (Schema::hasTable('users') && User::count() === 0) {
-                $user = $this->createInitialUserWithPermissions();
-                $this->createCategoriesAndServices($user);
+                $this->createInitialUserWithPermissions();
             }
 
             // Create dummy data
             $this->createDummyData();
+
+            // Seed appointments
+            $this->call(AppointmentSeeder::class);
 
             DB::commit();
         } catch (\Exception $e) {
@@ -150,29 +155,7 @@ class DatabaseSeeder extends Seeder
         // Assign the 'admin' role to the user
         $user->assignRole('admin');
 
-        // Create admin as employee with additional details
-        Employee::create([
-            'user_id' => $user->id,
-            'bio' => 'System Administrator',
-            'days' => json_encode([
-                "monday" => ["06:00-22:00"],
-                "tuesday" => ["06:00-15:00", "16:00-22:00"],
-                "wednesday" => ["09:00-12:00", "14:00-23:00"],
-                "thursday" => ["09:00-20:00"],
-                "friday" => ["06:00-17:00"],
-                "saturday" => ["05:00-18:00"]
-            ]),
-            'slot_duration' => 30,
-            'break_duration' => 15,
-            'social' => json_encode([
-                'facebook' => 'https://facebook.com',
-                'twitter' => 'https://twitter.com'
-            ]),
-            'other' => json_encode([
-                'specialization' => 'General Administration'
-            ])
-        ]);
-
+        // No Employee record or category/service assignment for admin
         return $user;
     }
 
@@ -181,6 +164,9 @@ class DatabaseSeeder extends Seeder
      */
     protected function createDummyData(): void
     {
+        // Get all categories
+        $categories = Category::all();
+
         // Create 7 employees
         for ($i = 1; $i <= 7; $i++) {
             $user = User::create([
@@ -194,8 +180,12 @@ class DatabaseSeeder extends Seeder
 
             $user->assignRole('employee');
 
-            Employee::create([
+            // Assign a random category to each employee
+            $category = $categories->random();
+
+            $employee = Employee::create([
                 'user_id' => $user->id,
+                'category_id' => $category->id,
                 'bio' => "Professional Employee $i",
                 'days' => json_encode([
                     "monday" => ["09:00-17:00"],
@@ -211,9 +201,13 @@ class DatabaseSeeder extends Seeder
                     'twitter' => 'https://twitter.com'
                 ]),
                 'other' => json_encode([
-                    'specialization' => 'General Services'
+                    'specialization' => $category->title
                 ])
             ]);
+
+            // Attach all services from this category to the employee
+            $categoryServices = Service::where('category_id', $category->id)->get();
+            $employee->services()->sync($categoryServices->pluck('id'));
         }
 
         // Create 12 users (subscribers)
@@ -234,79 +228,79 @@ class DatabaseSeeder extends Seeder
     /**
      * Create categories and services
      */
-    protected function createCategoriesAndServices(User $user): void
+    protected function createCategoriesAndServices(): void
     {
         // Create categories
         $categories = [
             [
-                'title' => 'Astrology',
-                'slug' => 'astrology',
-                'body' => 'Get insights into your future with our expert astrologers.'
+                'title' => 'Fitness Coaching',
+                'slug' => 'fitness-coaching',
+                'body' => 'Professional fitness coaching to help you achieve your health and fitness goals.'
             ],
             [
-                'title' => 'Dentist',
-                'slug' => 'dentist',
-                'body' => 'Professional dental care for your perfect smile.'
+                'title' => 'Pet Care',
+                'slug' => 'pet-care',
+                'body' => 'Comprehensive care services for your beloved pets.'
             ],
             [
-                'title' => 'Skin Specialist',
-                'slug' => 'skin-specialist',
-                'body' => 'Expert care for all your dermatological needs.'
+                'title' => 'Legal Advice',
+                'slug' => 'legal-advice',
+                'body' => 'Expert legal consultation and services for your needs.'
             ]
         ];
 
         foreach ($categories as $categoryData) {
             $category = Category::create($categoryData);
 
-            // Create 2 services for each category
+            // Create services for each category
             switch ($category->title) {
-                case 'Astrology':
+                case 'Fitness Coaching':
                     $services = [
                         [
-                            'title' => 'Birth Chart Reading',
-                            'slug' => 'birth-chart-reading',
-                            'price' => 999,
-                            'excerpt' => 'Detailed analysis of your natal chart for life insights.'
+                            'title' => 'Strength Training Session',
+                            'slug' => 'strength-training-session',
+                            'price' => 75,
+                            'excerpt' => 'Personalized strength training sessions to build muscle and improve overall fitness.'
                         ],
                         [
-                            'title' => 'Love Compatibility',
-                            'slug' => 'love-compatibility',
-                            'price' => 699,
-                            'excerpt' => 'Understand your relationship dynamics through astrology.'
+                            'title' => 'Weight Loss Program',
+                            'slug' => 'weight-loss-program',
+                            'price' => 299,
+                            'excerpt' => 'Comprehensive weight loss program including nutrition planning and workout routines.'
                         ]
                     ];
                     break;
 
-                case 'Dentist':
+                case 'Pet Care':
                     $services = [
                         [
-                            'title' => 'Teeth Cleaning',
-                            'slug' => 'teeth-cleaning',
-                            'price' => 750,
-                            'excerpt' => 'Professional cleaning to maintain oral health.'
+                            'title' => 'Dog Grooming',
+                            'slug' => 'dog-grooming',
+                            'price' => 50,
+                            'excerpt' => 'Professional grooming services for your dog including bathing, haircut, and nail trimming.'
                         ],
                         [
-                            'title' => 'Dental Implants',
-                            'slug' => 'dental-implants',
-                            'price' => 1500,
-                            'excerpt' => 'Restore your smile with permanent tooth replacements.'
+                            'title' => 'Veterinary Checkup',
+                            'slug' => 'veterinary-checkup',
+                            'price' => 85,
+                            'excerpt' => 'Comprehensive health checkup for your pet by licensed veterinarians.'
                         ]
                     ];
                     break;
 
-                case 'Skin Specialist':
+                case 'Legal Advice':
                     $services = [
                         [
-                            'title' => 'Acne Treatment',
-                            'slug' => 'acne-treatment',
-                            'price' => 3500,
-                            'excerpt' => 'Customized solutions for clear, healthy skin.'
-                        ],
-                        [
-                            'title' => 'Anti-Aging Facial',
-                            'slug' => 'anti-aging-facial',
+                            'title' => 'Contract Review',
+                            'slug' => 'contract-review',
                             'price' => 200,
-                            'excerpt' => 'Rejuvenate your skin and reduce signs of aging.'
+                            'excerpt' => 'Professional review and analysis of legal contracts and agreements.'
+                        ],
+                        [
+                            'title' => 'Immigration Consultation',
+                            'slug' => 'immigration-consultation',
+                            'price' => 150,
+                            'excerpt' => 'Expert guidance on immigration processes and documentation.'
                         ]
                     ];
                     break;
@@ -321,12 +315,6 @@ class DatabaseSeeder extends Seeder
                     'category_id' => $category->id
                 ]);
             }
-        }
-
-        // Attach all services to the employee
-        if ($user->employee) {
-            $allServices = Service::all();
-            $user->employee->services()->sync($allServices->pluck('id'));
         }
     }
 }

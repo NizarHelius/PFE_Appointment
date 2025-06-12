@@ -16,6 +16,11 @@ use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Http\Request;
 
+// Custom logout route
+Route::get('/logout', function () {
+    Auth::logout();
+    return redirect('/');
+})->name('logout');
 
 Auth::routes(['verify' => true]);
 

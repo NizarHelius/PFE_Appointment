@@ -18,9 +18,14 @@ class Employee extends Model
     ];
 
 
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
     public function holidays()
     {
-        return $this->hasMany(Holiday::class,'employee_id');
+        return $this->hasMany(Holiday::class, 'employee_id');
     }
 
 
@@ -39,5 +44,4 @@ class Employee extends Model
     {
         return $this->hasMany(Appointment::class);
     }
-
 }
